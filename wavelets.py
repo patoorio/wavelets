@@ -349,7 +349,7 @@ if __name__=="__main__":
     mpl.xlabel('Time [s]')
     plotcwt=np.clip(np.fabs(cwt.real), 0., 1000.)
     if plotpower2d: plotcwt=pwr
-    im=mpl.imshow(plotcwt,cmap=mpl.cm.jet,extent=[x[0],x[-1],y[-1],y[0]],aspect='auto')
+    im=mpl.imshow(plotcwt,cmap=mpl.cm.hot,extent=[x[0],x[-1],y[-1],y[0]],aspect='auto')
     #colorbar()
     if scaling=="log": ax.set_yscale('log')
     mpl.ylim(y[0],y[-1])
