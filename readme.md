@@ -1,0 +1,1 @@
+copied from [Pyscellania: a selection of Python programs¶](http://www.phy.uct.ac.za/courses/python/examples/moreexamples.html#wavelet-analysis-continuous-wavelet-transform)
