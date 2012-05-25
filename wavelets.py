@@ -131,18 +131,22 @@ class Cwt:
         returns wavelet coefficient array
         """
         return self.cwt
+
     def getcoefficients(self):
         return self.cwt
+
     def getpower(self):
         """
         returns square of wavelet coefficient array
         """
         return (self.cwt* NP.conjugate(self.cwt)).real
+
     def getscales(self):
         """
         returns array containing scales used in transform
         """
         return self.scales
+
     def getnscale(self):
         """
         return number of scales
