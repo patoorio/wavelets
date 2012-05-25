@@ -156,7 +156,7 @@ class Cwt:
 # wavelet classes    
 class Morlet(Cwt):
     """
-    Morlet wavelet
+    Complex Morlet wavelet
     """
     _omega0=5.0
     fourierwl=4* NP.pi/(_omega0+ NP.sqrt(2.0+_omega0**2))
