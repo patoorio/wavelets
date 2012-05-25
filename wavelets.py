@@ -51,7 +51,7 @@ updates:
 (24/2/07):  Fix Morlet so can get MorletReal by cutting out H
 (10/04/08): Numeric -> numpy
 (25/07/08): log and lin scale increment in same direction!
-            swap indices in 2-d coeffiecient matrix
+            swap indices in 2-d coefficient matrix
             explicit scaling of scale axis
 """
 
@@ -92,7 +92,7 @@ class Cwt:
         datahat=NP.fft.fft(data)
         self.fftdata=datahat
         #self.psihat0=self.wf(omega*self.scales[3*self.nscale/4])
-        # loop over scales and compute wvelet coeffiecients at each scale
+        # loop over scales and compute wavelet coefficients at each scale
         # using the fft to do the convolution
         for scaleindex in range(self.nscale):
             currentscale=self.scales[scaleindex]
@@ -107,7 +107,7 @@ class Cwt:
     
     def _setscales(self,ndata,largestscale,notes,scaling):
         """
-        if notes non-zero, returns a log scale based on notes per ocave
+        if notes non-zero, returns a log scale based on notes per octave
         else a linear scale
         (25/07/08): fix notes!=0 case so smallest scale at [0]
         """
@@ -223,7 +223,7 @@ class Paul(Cwt):
 
 class MexicanHat(Cwt):
     """
-    2nd Derivative Gaussian (mexican hat) wavelet
+    2nd Derivative Gaussian (Mexican hat) wavelet
     """
     fourierwl=2.0* NP.pi/ NP.sqrt(2.5)
     def wf(self, s_omega):
