@@ -15,10 +15,14 @@ Haar       : Unnormalised version of continuous Haar transform
 HaarW      : Normalised Haar
 
 Usage e.g.
-wavelet=Morlet(data, largestscale=2, notes=0, order=2, scaling="log")
+wavelet=Morlet(data, scales=None, largestscale=2, notes=0, order=2, scaling="log")
  data:  Numeric array of data (float), with length ndata.
         Optimum length is a power of 2 (for FFT)
         Worst-case length is a prime
+ scales: specific scales to convolve. If given, the remaining arguments
+        are ignored.
+        Smallest scale should be >= 2 for meaningful data        
+        
  largestscale:
         largest scale as inverse fraction of length
         scale = len(data)/largestscale
@@ -70,11 +74,14 @@ class Cwt:
         # utility function to return (integer) log2
         return int( NP.log(float(x))/ NP.log(2.0)+0.0001 )
 
-    def __init__(self, data, largestscale=1, notes=0, order=2, scaling='linear'):
+    def __init__(self, data, scales=None, largestscale=1, notes=0, order=2, scaling='linear'):
         """
         Continuous wavelet transform of data
 
         data:    data in array to transform, length must be power of 2
+        scales:  specific scales to convolve. If given, the remaining arguments
+                 are ignored.
+                 Smallest scale should be >= 2 for meaningful data
         notes:   number of scale intervals per octave
         largestscale: largest scale as inverse fraction of length
                  of data array
@@ -86,9 +93,14 @@ class Cwt:
         ndata = len(data)
         self.order=order
         self.scale=largestscale
-        self._setscales(ndata,largestscale,notes,scaling)
+        if scales is not None:
+            self.scales=scales
+            self.nscale=len(self.scales)
+        else:        
+            self._setscales(ndata,largestscale,notes,scaling)
+            
         self.cwt= NP.zeros((self.nscale,ndata), NP.complex64)
-        omega= NP.array(range(0,ndata/2)+range(-ndata/2,0))*(2.0*NP.pi/ndata)
+        omega= NP.r_[NP.arange(0,ndata//2),NP.arange(-ndata//2,0)]*(2.0*NP.pi/ndata)
         datahat=NP.fft.fft(data)
         self.fftdata=datahat
         #self.psihat0=self.wf(omega*self.scales[3*self.nscale/4])
@@ -123,7 +135,7 @@ class Cwt:
             nmax=ndata/largestscale/2
             self.scales=NP.arange(float(2),float(nmax))
             self.nscale=len(self.scales)
-        else: raise ValueError, "scaling must be linear or log"
+        else: raise ValueError("scaling must be linear or log")
         return
     
     def getdata(self):
@@ -140,6 +152,13 @@ class Cwt:
         returns square of wavelet coefficient array
         """
         return (self.cwt* NP.conjugate(self.cwt)).real
+
+    def getnormpower(self):
+        """
+        returns square of wavelet coefficient array normalized by scale
+        """
+        cwt1=self.cwt / (NP.sqrt(self.scales[:,None]))
+        return (cwt1* NP.conjugate(cwt1)).real
 
     def getscales(self):
         """
@@ -162,7 +181,7 @@ class Morlet(Cwt):
     fourierwl=4* NP.pi/(_omega0+ NP.sqrt(2.0+_omega0**2))
     def wf(self, s_omega):
         H= NP.ones(len(s_omega))
-        n=len(s_omega)
+#        n=len(s_omega)
         for i in range(len(s_omega)):
             if s_omega[i] < 0.0: H[i]=0.0
         # !!!! note : was s_omega/8 before 17/6/03
@@ -177,7 +196,7 @@ class MorletReal(Cwt):
     fourierwl=4* NP.pi/(_omega0+ NP.sqrt(2.0+_omega0**2))
     def wf(self, s_omega):
         H= NP.ones(len(s_omega))
-        n=len(s_omega)
+#        n=len(s_omega)
         for i in range(len(s_omega)):
             if s_omega[i] < 0.0: H[i]=0.0
         # !!!! note : was s_omega/8 before 17/6/03
@@ -192,7 +211,7 @@ class Paul4(Cwt):
     def wf(self, s_omega):
         n=len(s_omega)
         xhat= NP.zeros(n)
-        xhat[0:n/2]=0.11268723*s_omega[0:n/2]**4* NP.exp(-s_omega[0:n/2])
+        xhat[0:n//2]=0.11268723*s_omega[0:n//2]**4* NP.exp(-s_omega[0:n//2])
         #return 0.11268723*s_omega**2*exp(-s_omega)*H
         return xhat
 
@@ -204,7 +223,7 @@ class Paul2(Cwt):
     def wf(self, s_omega):
         n=len(s_omega)
         xhat= NP.zeros(n)
-        xhat[0:n/2]=1.1547005*s_omega[0:n/2]**2* NP.exp(-s_omega[0:n/2])
+        xhat[0:n//2]=1.1547005*s_omega[0:n//2]**2* NP.exp(-s_omega[0:n//2])
         #return 0.11268723*s_omega**2*exp(-s_omega)*H
         return xhat
 
@@ -221,7 +240,7 @@ class Paul(Cwt):
             normfactor=normfactor*i
         normfactor=2.0**m/ NP.sqrt(normfactor)
         xhat= NP.zeros(n)
-        xhat[0:n/2]=normfactor*s_omega[0:n/2]**m* NP.exp(-s_omega[0:n/2])
+        xhat[0:n//2]=normfactor*s_omega[0:n//2]**m* NP.exp(-s_omega[0:n//2])
         #return 0.11268723*s_omega**2*exp(-s_omega)*H
         return xhat
 
@@ -256,8 +275,8 @@ class DOG1(Cwt):
     """
     fourierwl=2.0* NP.pi/ NP.sqrt(1.5)
     def wf(self, s_omega):
-        dog1= NP.zeros(len(s_omega),complex64)
-        dog1.imag=s_omega* NP.exp(-s_omega**2/2.0)/sqrt(pi)
+        dog1= NP.zeros(len(s_omega),NP.complex64)
+        dog1.imag=s_omega* NP.exp(-s_omega**2/2.0)/NP.sqrt(NP.pi)
         return dog1
 
 class DOG(Cwt):
@@ -269,7 +288,7 @@ class DOG(Cwt):
         try:
             from scipy.special import gamma
         except ImportError:
-            print "Requires scipy gamma function"
+            print("Requires scipy gamma function")
             raise ImportError
         Cwt.fourierwl=2* NP.pi/ NP.sqrt(self.order+0.5)
         m=self.order
@@ -287,7 +306,7 @@ class Haar(Cwt):
 
     fourierwl=1.0#1.83129  #2.0
     def wf(self, s_omega):
-        haar= NP.zeros(len(s_omega),complex64)
+        haar= NP.zeros(len(s_omega),NP.complex64)
         om = s_omega[:]/self.currentscale
         om[0]=1.0  #prevent divide error
         #haar.imag=4.0*sin(s_omega/2)**2/om
@@ -305,7 +324,7 @@ class HaarW(Cwt):
 
     fourierwl=1.83129*1.2  #2.0
     def wf(self, s_omega):
-        haar= NP.zeros(len(s_omega),complex64)
+        haar= NP.zeros(len(s_omega),NP.complex64)
         om = s_omega[:]#/self.currentscale
         om[0]=1.0  #prevent divide error
         #haar.imag=4.0*sin(s_omega/2)**2/om
@@ -336,7 +355,7 @@ if __name__=="__main__":
     A[512:768]+=B[0:256]
     
     # Wavelet transform the data
-    cw=wavelet(A,maxscale,notes,scaling=scaling)
+    cw=wavelet(A,largestscale=maxscale,notes=notes,scaling=scaling)
     scales=cw.getscales()     
     cwt=cw.getdata()
     # power spectrum
@@ -353,7 +372,7 @@ if __name__=="__main__":
     mpl.xlabel('Time [s]')
     plotcwt=np.clip(np.fabs(cwt.real), 0., 1000.)
     if plotpower2d: plotcwt=pwr
-    im=mpl.imshow(plotcwt,cmap=mpl.cm.hot,extent=[x[0],x[-1],y[-1],y[0]],aspect='auto')
+    im=mpl.imshow(plotcwt,cmap=mpl.cm.jet,extent=[x[0],x[-1],y[-1],y[0]],aspect='auto')
     #colorbar()
     if scaling=="log": ax.set_yscale('log')
     mpl.ylim(y[0],y[-1])
