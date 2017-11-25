@@ -51,12 +51,6 @@ C Torrance and GP Compo
 Bull Amer Meteor Soc Vol 79 No 1 61-78 (1998)
 naming below vaguely follows this.
 
-updates:
-(24/2/07):  Fix Morlet so can get MorletReal by cutting out H
-(10/04/08): Numeric -> numpy
-(25/07/08): log and lin scale increment in same direction!
-            swap indices in 2-d coefficient matrix
-            explicit scaling of scale axis
 """
 
 class Cwt:
