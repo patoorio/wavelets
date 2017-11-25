@@ -1,4 +1,4 @@
-This forks adds:
+This fork adds:
 
 * Option for specifying a specific set of desired scales
 * Several minor fixes that add compatibility with Python3
