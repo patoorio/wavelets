@@ -21,8 +21,7 @@ wavelet=Morlet(data, scales=None, largestscale=2, notes=0, order=2, scaling="log
         Worst-case length is a prime
  scales: specific scales to convolve. If given, the remaining arguments
         are ignored.
-        Smallest scale should be >= 2 for meaningful data        
-        
+        Smallest scale should be >= 2 for meaningful data                
  largestscale:
         largest scale as inverse fraction of length
         scale = len(data)/largestscale
@@ -50,6 +49,7 @@ A practical guide to wavelet analysis
 C Torrance and GP Compo
 Bull Amer Meteor Soc Vol 79 No 1 61-78 (1998)
 naming below vaguely follows this.
+find the latest version in https://gist.github.com/patoorio/a9f60ef16489639fbf20f23ac49ba24f
 
 """
 
