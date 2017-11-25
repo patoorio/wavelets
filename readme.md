@@ -1,4 +1,8 @@
-copied from [Pyscellania: a selection of Python programs¶](http://www.phy.uct.ac.za/courses/python/examples/moreexamples.html#wavelet-analysis-continuous-wavelet-transform)
+This forks adds:
+
+* Option for specifying a specific set of desired scales
+* Several minor fixes that add compatibility with Python3
+* New getnormpower() function, that normalizes the power by the square root of the scales
 
 Examples:
 
