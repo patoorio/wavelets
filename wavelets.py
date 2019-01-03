@@ -3,6 +3,7 @@ import numpy as NP
 """
 A module which implements the continuous wavelet transform
 
+
 Wavelet classes:
 Morlet
 MorletReal
@@ -21,7 +22,7 @@ wavelet=Morlet(data, scales=None, largestscale=2, notes=0, order=2, scaling="log
         Worst-case length is a prime
  scales: specific scales to convolve. If given, the remaining arguments
         are ignored.
-        Smallest scale should be >= 2 for meaningful data                
+        Smallest scale should be >= 2 for meaningful data        
  largestscale:
         largest scale as inverse fraction of length
         scale = len(data)/largestscale
@@ -98,7 +99,7 @@ class Cwt:
         datahat=NP.fft.fft(data)
         self.fftdata=datahat
         #self.psihat0=self.wf(omega*self.scales[3*self.nscale/4])
-        # loop over scales and compute wavelet coefficients at each scale
+        # loop over scales and compute wavelet coeffiecients at each scale
         # using the fft to do the convolution
         for scaleindex in range(self.nscale):
             currentscale=self.scales[scaleindex]
