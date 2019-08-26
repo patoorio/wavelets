@@ -23,6 +23,7 @@ wavelet=Morlet(data, scales=None, largestscale=2, notes=0, order=2, scaling="log
  scales: specific scales to convolve. If given, the remaining arguments
         are ignored.
         Smallest scale should be >= 2 for meaningful data        
+        
  largestscale:
         largest scale as inverse fraction of length
         scale = len(data)/largestscale
