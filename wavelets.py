@@ -54,10 +54,10 @@ naming below vaguely follows this.
 find the latest version in https://gist.github.com/patoorio/a9f60ef16489639fbf20f23ac49ba24f
 
 """
-
 class Cwt:
     """
-    Base class for continuous wavelet transforms
+    Base class for continuous wavelet transforms.
+    
     Implements cwt via the Fourier transform
     Used by subclass which provides the method wf(self,s_omega)
     wf is the Fourier transform of the wavelet function.
@@ -72,7 +72,7 @@ class Cwt:
 
     def __init__(self, data, scales=None, largestscale=1, notes=0, order=2, scaling='linear'):
         """
-        Continuous wavelet transform of data
+        Continuous wavelet transform of data.
 
         data:    data in array to transform, length must be power of 2
         scales:  specific scales to convolve. If given, the remaining arguments
@@ -115,8 +115,10 @@ class Cwt:
     
     def _setscales(self,ndata,largestscale,notes,scaling):
         """
-        if notes non-zero, returns a log scale based on notes per octave
-        else a linear scale
+        Automatic generation of scales based on a largest value, number of notes and scaling.
+        
+        If notes non-zero, returns a log scale based on notes per octave else a linear scale.
+        
         (25/07/08): fix notes!=0 case so smallest scale at [0]
         """
         if scaling=="log":
@@ -135,74 +137,62 @@ class Cwt:
         return
     
     def getdata(self):
-        """
-        returns wavelet coefficient array
-        """
+        """Return wavelet coefficient array."""
         return self.cwt
 
     def getcoefficients(self):
+        """Return wavelet coefficient array (same as getdata)."""
         return self.cwt
 
     def getpower(self):
-        """
-        returns square of wavelet coefficient array
-        """
+        """Return wavelet coefficient arrays squared."""
         return (self.cwt* NP.conjugate(self.cwt)).real
 
     def getnormpower(self):
-        """
-        returns square of wavelet coefficient array normalized by scale
-        """
+        """Return square of wavelet coefficient array normalized by scale."""
         cwt1=self.cwt / (NP.sqrt(self.scales[:,None]))
         return (cwt1* NP.conjugate(cwt1)).real
 
     def getscales(self):
-        """
-        returns array containing scales used in transform
-        """
+        """Return array of scales used in transform."""
         return self.scales
 
     def getnscale(self):
-        """
-        return number of scales
-        """
+        """Return number of scales."""
         return self.nscale
 
 # wavelet classes    
 class Morlet(Cwt):
-    """
-    Complex Morlet wavelet
-    """
+    """Complex Morlet wavelet."""
+    
     _omega0=5.0
     fourierwl=4* NP.pi/(_omega0+ NP.sqrt(2.0+_omega0**2))
     def wf(self, s_omega):
         H= NP.ones(len(s_omega))
-#        n=len(s_omega)
+        # n=len(s_omega)
         for i in range(len(s_omega)):
             if s_omega[i] < 0.0: H[i]=0.0
-        # !!!! note : was s_omega/8 before 17/6/03
+        # note : was s_omega/8 before 17/6/03
         xhat=0.75112554*( NP.exp(-(s_omega-self._omega0)**2/2.0))*H
         return xhat
 
 class MorletReal(Cwt):
-    """
-    Real Morlet wavelet
-    """
+    """Real Morlet wavelet."""
+    
     _omega0=5.0
     fourierwl=4* NP.pi/(_omega0+ NP.sqrt(2.0+_omega0**2))
     def wf(self, s_omega):
         H= NP.ones(len(s_omega))
-#        n=len(s_omega)
+        # n=len(s_omega)
         for i in range(len(s_omega)):
             if s_omega[i] < 0.0: H[i]=0.0
-        # !!!! note : was s_omega/8 before 17/6/03
+        #  note : was s_omega/8 before 17/6/03
         xhat=0.75112554*( NP.exp(-(s_omega-self._omega0)**2/2.0)+ NP.exp(-(s_omega+self._omega0)**2/2.0)- NP.exp(-(self._omega0)**2/2.0)+ NP.exp(-(self._omega0)**2/2.0))
         return xhat
     
 class Paul4(Cwt):
-    """
-    Paul m=4 wavelet
-    """
+    """Paul m=4 wavelet."""
+    
     fourierwl=4* NP.pi/(2.*4+1.)
     def wf(self, s_omega):
         n=len(s_omega)
@@ -212,9 +202,8 @@ class Paul4(Cwt):
         return xhat
 
 class Paul2(Cwt):
-    """
-    Paul m=2 wavelet
-    """
+    """Paul m=2 wavelet."""
+    
     fourierwl=4* NP.pi/(2.*2+1.)
     def wf(self, s_omega):
         n=len(s_omega)
@@ -224,9 +213,8 @@ class Paul2(Cwt):
         return xhat
 
 class Paul(Cwt):
-    """
-    Paul order m wavelet
-    """
+    """Paul order m wavelet."""
+    
     def wf(self, s_omega):
         Cwt.fourierwl=4* NP.pi/(2.*self.order+1.)
         m=self.order
@@ -241,9 +229,8 @@ class Paul(Cwt):
         return xhat
 
 class MexicanHat(Cwt):
-    """
-    2nd Derivative Gaussian (Mexican hat) wavelet
-    """
+    """2nd Derivative Gaussian (Mexican hat) wavelet."""
+    
     fourierwl=2.0* NP.pi/ NP.sqrt(2.5)
     def wf(self, s_omega):
         # should this number be 1/sqrt(3/4) (no pi)?
@@ -256,19 +243,23 @@ class MexicanHat(Cwt):
 
 class DOG4(Cwt):
     """
-    4th Derivative Gaussian wavelet
+    4th Derivative Gaussian wavelet.
+    
     see also T&C errata for - sign
     but reconstruction seems to work best with +!
     """
+    
     fourierwl=2.0* NP.pi/ NP.sqrt(4.5)
     def wf(self, s_omega):
         return s_omega**4* NP.exp(-s_omega**2/2.0)/3.4105319
 
 class DOG1(Cwt):
     """
-    1st Derivative Gaussian wavelet
+    1st Derivative Gaussian wavelet.
+    
     but reconstruction seems to work best with +!
     """
+    
     fourierwl=2.0* NP.pi/ NP.sqrt(1.5)
     def wf(self, s_omega):
         dog1= NP.zeros(len(s_omega),NP.complex64)
@@ -277,9 +268,11 @@ class DOG1(Cwt):
 
 class DOG(Cwt):
     """
-    Derivative Gaussian wavelet of order m
+    Derivative Gaussian wavelet of order m.
+    
     but reconstruction seems to work best with +!
     """
+    
     def wf(self, s_omega):
         try:
             from scipy.special import gamma
@@ -292,9 +285,8 @@ class DOG(Cwt):
         return dog
 
 class Haar(Cwt):
-    """
-    Continuous version of Haar wavelet
-    """
+    """Continuous version of Haar wavelet."""
+    
     #    note: not orthogonal!
     #    note: s_omega/4 matches Lecroix scale defn.
     #          s_omega/2 matches orthogonal Haar
@@ -310,9 +302,8 @@ class Haar(Cwt):
         return haar
 
 class HaarW(Cwt):
-    """
-    Continuous version of Haar wavelet (norm)
-    """
+    """Continuous version of Haar wavelet (norm)."""
+    
     #    note: not orthogonal!
     #    note: s_omega/4 matches Lecroix scale defn.
     #          s_omega/2 matches orthogonal Haar
