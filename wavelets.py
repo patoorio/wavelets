@@ -166,7 +166,9 @@ class Morlet(Cwt):
     """Complex Morlet wavelet."""
     
     _omega0=5.0
-    fourierwl=4* NP.pi/(_omega0+ NP.sqrt(2.0+_omega0**2))
+    
+    fourierwl=4* NP.pi/(_omega0 + NP.sqrt(2.0 + _omega0**2))
+    
     def wf(self, s_omega):
         H= NP.ones(len(s_omega))
         # n=len(s_omega)
